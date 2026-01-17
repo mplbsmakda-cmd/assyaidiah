@@ -1,0 +1,6 @@
+/.git
+/.vscode
+/node_modules
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*.log

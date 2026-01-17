@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: laravel-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_URL
+        fromService:
+          type: web
+          name: laravel-app
+          property: url
+      - key: APP_KEY
+        generateValue: true # Render will generate this for you on first deploy
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: pgsql # Recommended to use Render PostgreSQL
+      - key: DB_HOST
+        fromDatabase:
+          name: laravel-db # Assumes you will create a database named laravel-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: laravel-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: laravel-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: laravel-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: laravel-db
+          property: password
+
+databases:
+  - name: laravel-db
+    databaseName: laravel
+    user: laravel_user
