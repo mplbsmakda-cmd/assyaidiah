@@ -16,30 +16,8 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: DB_CONNECTION
-        value: pgsql # Recommended to use Render PostgreSQL
-      - key: DB_HOST
-        fromDatabase:
-          name: laravel-db # Assumes you will create a database named laravel-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: laravel-db
-          property: port
-      - key: DB_DATABASE
-        fromDatabase:
-          name: laravel-db
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: laravel-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: laravel-db
-          property: password
-
-databases:
-  - name: laravel-db
-    databaseName: laravel
-    user: laravel_user
+      # Firebase Environment Variables
+      - key: FIREBASE_PROJECT_ID
+        value: your-firebase-project-id # <-- GANTI DENGAN PROJECT ID ANDA
+      - key: FIREBASE_CREDENTIALS
+        value: your-firebase-credentials-json # <-- GANTI DENGAN ISI FILE JSON KREDENSIAL ANDA

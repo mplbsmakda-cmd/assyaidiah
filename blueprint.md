@@ -4,6 +4,8 @@
 
 Proyek ini adalah sistem informasi untuk mengelola data santri dan wali santri di Pondok Pesantren Assyaidiah. Aplikasi ini dibangun dengan Laravel dan dirancang untuk menyediakan antarmuka yang bersih dan fungsional bagi administrator, serta halaman pendaftaran publik yang modern dan mudah digunakan.
 
+**Perubahan Arsitektur Utama:** Aplikasi ini sekarang menggunakan **Google Firestore** sebagai database utamanya, beralih dari model database relasional tradisional. Semua interaksi data (CRUD) ditangani melalui Firebase SDK, bukan Eloquent ORM.
+
 ## Gaya, Desain, dan Fitur yang Diimplementasikan
 
 ### Halaman Publik
@@ -29,26 +31,16 @@ Proyek ini adalah sistem informasi untuk mengelola data santri dan wali santri d
     *   Daftar "Santri Terbaru" dengan foto profil atau inisial.
 
 ### Fungsionalitas Backend
-*   **Pendaftaran Publik**: `StudentController` memiliki metode `createPublic` dan `storePublic` untuk menangani pendaftaran dari halaman publik.
-*   **NIS Otomatis**: Nomor Induk Santri (NIS) dibuat secara otomatis saat pendaftaran publik.
-*   **Manajemen Data**: Fungsionalitas CRUD penuh untuk data santri dan wali santri.
-*   **Penyimpanan File**: Menggunakan Firebase Storage untuk mengunggah dan mengelola foto santri.
+*   **Penyimpanan File**: Menggunakan **Firebase Storage** untuk mengunggah dan mengelola foto santri.
+*   **Database**: Menggunakan **Firebase Firestore** untuk semua operasi data (CRUD).
 
-## Rencana Perubahan Saat Ini: Peningkatan UI/UX dan Persiapan Deployment
+## Rencana Perubahan Saat Ini: Migrasi Penuh ke Firebase Firestore
 
-### 1. Peningkatan UI/UX (Selesai)
+*   **Tujuan**: Mengubah arsitektur aplikasi secara fundamental untuk menggunakan Firebase Firestore sebagai database utama, menggantikan model relasional (MySQL/PostgreSQL) dan Eloquent ORM.
 
-*   **Tujuan**: Memberikan pengalaman pengguna yang lebih modern, menarik, dan premium di seluruh aplikasi.
 *   **Langkah-langkah**:
-    *   **Tata Letak Publik**: Menyempurnakan `layouts/public.blade.php` dengan transisi, bayangan *header*, dan skema warna yang lebih harmonis.
-    *   **Halaman Utama**: Memperbarui `welcome.blade.php` dengan ikon, efek *hover* pada galeri, dan tipografi dinamis.
-    *   **Halaman Pendaftaran**: Menyempurnakan `students/register.blade.php` dengan status fokus pada *input* dan umpan balik visual yang lebih baik.
-    *   **Dasbor Admin**: Mempercantik `dashboard.blade.php` dengan latar belakang ikon, bayangan kartu, dan efek "glow" pada elemen interaktif.
-
-### 2. Persiapan Deployment Vercel (Selesai)
-
-*   **Tujuan**: Mengonfigurasi proyek agar dapat di-*deploy* dan berjalan dengan lancar di platform Vercel.
-*   **Langkah-langkah**:
-    *   **Membuat `vercel.json`**: Menambahkan file konfigurasi untuk Vercel yang mendefinisikan *runtime* PHP, *builds*, dan *routes* agar kompatibel dengan arsitektur *serverless*.
-    *   **Membuat `api/index.php`**: Membuat *entrypoint* untuk Vercel agar dapat menjalankan aplikasi Laravel.
-    *   **Membuat `.vercelignore`**: Menambahkan file untuk mengecualikan direktori dan file yang tidak perlu (seperti `node_modules`, `storage/logs`) dari proses *deployment* untuk efisiensi.
+    1.  **Hapus Konfigurasi Database SQL**: Memperbarui `render.yaml` untuk menghapus definisi database PostgreSQL dan variabel lingkungan terkait (`DB_HOST`, `DB_DATABASE`, dll.).
+    2.  **Perluas `FirebaseService`**: Menambahkan metode baru ke `app/Services/FirebaseService.php` untuk menangani operasi CRUD (Create, Read, Update, Delete) di Firestore. Ini akan menjadi satu-satunya titik interaksi dengan database.
+    3.  **Refactor Controller**: Mengubah *controller* (dimulai dengan `StudentController` dan `WaliSantriController`) untuk menggunakan `FirebaseService` yang baru. Semua panggilan ke model Eloquent (seperti `Santri::all()`, `WaliSantri::create()`) akan diganti dengan panggilan ke layanan Firebase.
+    4.  **Hapus Kode Usang**: Menghapus file migrasi database dari direktori `database/migrations` karena tidak lagi relevan.
+    5.  **Perbarui Variabel Lingkungan**: Menambahkan variabel `FIREBASE_PROJECT_ID` dan `FIREBASE_CREDENTIALS` ke `render.yaml` untuk memastikan koneksi ke Firebase saat di-deploy.
